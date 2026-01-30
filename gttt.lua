@@ -259,7 +259,7 @@ KeyTab:AddButton({
             
             -- Load main script
             wait(0.5)
-            loadstring(game:HttpGet("https://github.com/Earth3095/Earth-Hub/blob/main/UltimateHub_Main.lua"))()
+      loadstring(game:HttpGet("https://raw.githubusercontent.com/Earth3095/Earth-Hub/main/UltimateHub_Main.lua"))()
         else
             OrionLib:MakeNotification({
                 Name = "❌ Verification Failed",
