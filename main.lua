@@ -1,3 +1,6 @@
+--// ==================== MAIN SCRIPT (Clean Version) ====================
+repeat task.wait() until game:IsLoaded() and workspace.CurrentCamera
+
 --// Services
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -6,21 +9,6 @@ local VirtualInputManager = game:GetService("VirtualInputManager")
 
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
-
---// Rayfield GUI
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
-
-local Window = Rayfield:CreateWindow({
-    Name = "Universal | v4",
-    LoadingTitle = "Universal Cheat",
-    LoadingSubtitle = "Aimbot + TriggerBot + Anti-Recoil + Anti-Aim",
-    ConfigurationSaving = { Enabled = false },
-    KeySystem = false
-})
-
-local AimbotTab = Window:CreateTab("Aimbot", 4483362748)
-local CombatTab = Window:CreateTab("Combat", 4483362748)
-local MiscTab = Window:CreateTab("Misc", 4483362748)
 
 --// Settings
 getgenv().Settings = {
@@ -35,7 +23,7 @@ getgenv().Settings = {
     },
     TriggerBot = {
         Enabled = false,
-        Delay = 0.05,           -- ยิ่งต่ำยิ่งเร็ว
+        Delay = 0.05,
         TeamCheck = true,
         WallCheck = true
     },
@@ -61,10 +49,12 @@ end
 
 local function GetClosestTarget()
     local Closest, Shortest = nil, Settings.Aimbot.FOV
+
     for _, v in pairs(Players:GetPlayers()) do
-        if v \~= LocalPlayer and v.Character and v.Character:FindFirstChild(Settings.Aimbot.TargetPart) then
+        if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild(Settings.Aimbot.TargetPart) then
             local Part = v.Character[Settings.Aimbot.TargetPart]
             local Pos, OnScreen = Camera:WorldToViewportPoint(Part.Position)
+
             if OnScreen then
                 local Dist = (Vector2.new(Pos.X, Pos.Y) - Camera.ViewportSize/2).Magnitude
                 if Dist < Shortest and CanSee(Part) then
@@ -78,7 +68,7 @@ local function GetClosestTarget()
     return Closest
 end
 
---// TriggerBot Function
+--// TriggerBot
 local function TriggerBot()
     if not Settings.TriggerBot.Enabled then return end
     if tick() - LastShot < Settings.TriggerBot.Delay then return end
@@ -87,7 +77,6 @@ local function TriggerBot()
     if Target and Target.Character then
         local Part = Target.Character:FindFirstChild(Settings.Aimbot.TargetPart)
         if Part and CanSee(Part) then
-            -- ยิง (Mouse Click)
             VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 0)
             task.wait(0.03)
             VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 0)
@@ -119,7 +108,7 @@ RunService.Heartbeat:Connect(function()
         if Hum then Hum.CameraOffset = Vector3.new(0, 0, 0) end
     end
 
-    -- Anti-Aim
+    -- Anti-Aim (Jitter)
     if Settings.AntiAim.Enabled and LocalPlayer.Character then
         local HRP = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
         if HRP then
@@ -150,9 +139,22 @@ RunService.RenderStepped:Connect(function()
     FOVCircle.Position = Camera.ViewportSize / 2
 end)
 
---// ==================== GUI ====================
+--// ==================== RAYFIELD GUI ====================
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
--- Aimbot
+local Window = Rayfield:CreateWindow({
+    Name = "Universal | v4",
+    LoadingTitle = "Universal Cheat",
+    LoadingSubtitle = "Aimbot + TriggerBot + Anti-Recoil + Anti-Aim",
+    ConfigurationSaving = { Enabled = false },
+    KeySystem = false
+})
+
+local AimbotTab = Window:CreateTab("Aimbot", 4483362748)
+local CombatTab = Window:CreateTab("Combat", 4483362748)
+local MiscTab = Window:CreateTab("Misc", 4483362748)
+
+--// Aimbot GUI
 AimbotTab:CreateToggle({
     Name = "Enable Aimbot",
     CurrentValue = false,
@@ -193,7 +195,7 @@ AimbotTab:CreateToggle({
     Callback = function(v) Settings.Aimbot.TeamCheck = v end
 })
 
--- Combat
+--// Combat GUI
 CombatTab:CreateToggle({
     Name = "TriggerBot",
     CurrentValue = false,
@@ -220,7 +222,7 @@ CombatTab:CreateToggle({
     Callback = function(v) Settings.AntiAim.Enabled = v end
 })
 
--- Misc
+--// Misc GUI
 MiscTab:CreateSlider({
     Name = "WalkSpeed",
     Range = {16, 100},
@@ -237,7 +239,7 @@ MiscTab:CreateSlider({
     Callback = function(v) Settings.Misc.JumpPower = v end
 })
 
---// Keybind
+--// Keybind (กด Q เพื่อเปิด/ปิด Aimbot)
 UserInputService.InputBegan:Connect(function(Input)
     if Input.KeyCode == Enum.KeyCode.Q then
         Holding = not Holding
@@ -249,7 +251,7 @@ UserInputService.InputBegan:Connect(function(Input)
     end
 end)
 
-print("[Universal v4] Loaded | กด Q เพื่อเปิด Aimbot")
+print("[Universal v4] Loaded successfully | กด Q เพื่อเปิด Aimbot")
 Rayfield:Notify({
     Title = "Loaded",
     Content = "Aimbot + TriggerBot + Anti-Recoil + Anti-Aim",
