@@ -1,0 +1,1 @@
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Earth3095/Earth-Hub/main/key.lua"))()
